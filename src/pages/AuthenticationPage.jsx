@@ -227,7 +227,7 @@
 //                                         color: passwordStrength === 4 ? 'green' : passwordStrength > 0 ? 'red' : 'black'
 //                                     }}
 //                                 >
-//                                     {passwordStrength === 4
+//                                     {passwordStrength === "~!@#$%^&*()AbcD!@#$%^&*()AbcD".length
 //                                         ? "Password is strong!"
 //                                         : passwordStrength > 0
 //                                         ? "Password is weak. Try using a mix of letters, numbers, and symbols."
@@ -340,7 +340,7 @@ const AuthenticationPage = ({ mode, role }) => {
 
     const [emailError, setEmailError] = useState(false);
     const [passwordError, setPasswordError] = useState(false);
-    const [passwordStrength, setPasswordStrength] = useState(null); // Changed to null for initial state
+    const [passwordStrength, setPasswordStrength] = useState("");
     const [userNameError, setUserNameError] = useState(false);
     const [shopNameError, setShopNameError] = useState(false);
 
@@ -349,6 +349,14 @@ const AuthenticationPage = ({ mode, role }) => {
 
         const email = event.target.email.value;
         const password = event.target.password.value;
+
+        // Password strength validation for weak passwords
+        const passwordStrengthScore = zxcvbn(password).score;
+        if (passwordStrengthScore < 2) {
+            setMessage("Password is too weak. Please choose a stronger password.");
+            setShowPopup(true);
+            return;  // Prevent form submission
+        }
 
         if (!email || !password) {
             if (!email) setEmailError(true);
@@ -404,8 +412,7 @@ const AuthenticationPage = ({ mode, role }) => {
 
     const assessPasswordStrength = (password) => {
         const result = zxcvbn(password);
-        const score = result.score;
-        setPasswordStrength(score); // Update strength score
+        setPasswordStrength(result.score); // Get the strength score
     };
 
     const onCaptchaChange = (value) => {
@@ -534,23 +541,18 @@ const AuthenticationPage = ({ mode, role }) => {
                             />
                             
                             {/* Password Strength Assessment (Only for Register mode) */}
-                            {mode === "Register" && (
+                            {mode === "Register" && passwordStrength !== undefined && (
                                 <Typography
                                     variant="body2"
                                     sx={{
-                                        color:
-                                            passwordStrength === 4
-                                                ? 'green'
-                                                : passwordStrength === 2 || passwordStrength === 3
-                                                ? 'yellow'
-                                                : 'red',
+                                        color: passwordStrength === 4 ? 'green' : passwordStrength > 0 ? 'red' : 'black'
                                     }}
                                 >
                                     {passwordStrength === 4
                                         ? "Password is strong!"
-                                        : passwordStrength === 2 || passwordStrength === 3
-                                        ? "Password is medium."
-                                        : "Password is weak. Try using a mix of letters, numbers, and symbols."}
+                                        : passwordStrength > 0
+                                        ? "Password is weak. Try using a mix of letters, numbers, and symbols."
+                                        : ""}
                                 </Typography>
                             )}
 
