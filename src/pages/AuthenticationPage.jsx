@@ -2,17 +2,16 @@
 // import { Box, Checkbox, CircularProgress, CssBaseline, FormControlLabel, Grid, IconButton, InputAdornment, Paper, TextField, Typography } from '@mui/material';
 // import * as React from 'react';
 // import { useEffect, useState } from 'react';
-// import ReCAPTCHA from "react-google-recaptcha"; // <-- Import reCAPTCHA
+// import ReCAPTCHA from "react-google-recaptcha";
 // import { useDispatch, useSelector } from 'react-redux';
 // import { Link, useNavigate } from 'react-router-dom';
 // import styled from 'styled-components';
-// import zxcvbn from 'zxcvbn'; // Password strength checker library
+// import zxcvbn from 'zxcvbn';
 // import Popup from '../components/Popup';
 // import { authUser } from '../redux/userHandle';
 // import { LightPurpleButton } from '../utils/buttonStyles';
 
 // const AuthenticationPage = ({ mode, role }) => {
-
 //     const bgpic = "https://images.pexels.com/photos/1121097/pexels-photo-1121097.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1";
 //     const dispatch = useDispatch();
 //     const navigate = useNavigate();
@@ -23,19 +22,34 @@
 //     const [loader, setLoader] = useState(false);
 //     const [showPopup, setShowPopup] = useState(false);
 //     const [message, setMessage] = useState("");
-//     const [captchaValue, setCaptchaValue] = useState(null); // Store captcha value
+//     const [captchaValue, setCaptchaValue] = useState(null);
 
 //     const [emailError, setEmailError] = useState(false);
 //     const [passwordError, setPasswordError] = useState(false);
 //     const [passwordStrength, setPasswordStrength] = useState("");
 //     const [userNameError, setUserNameError] = useState(false);
 //     const [shopNameError, setShopNameError] = useState(false);
+//     const [phoneNumberError, setPhoneNumberError] = useState(false);
+//     const [phoneNumberErrorText, setPhoneNumberErrorText] = useState("");
+
+//     const validatePhoneNumber = (phoneNumber) => {
+//         const phoneRegex = /^\+?[\d\s-]{10,}$/;
+//         return phoneRegex.test(phoneNumber);
+//     };
 
 //     const handleSubmit = (event) => {
 //         event.preventDefault();
 
 //         const email = event.target.email.value;
 //         const password = event.target.password.value;
+//         const phoneNumber = event.target.phoneNumber?.value;
+
+//         const passwordStrengthScore = zxcvbn(password).score;
+//         if (passwordStrengthScore < 2) {
+//             setMessage("Password is too weak. Please choose a stronger password.");
+//             setShowPopup(true);
+//             return;
+//         }
 
 //         if (!email || !password) {
 //             if (!email) setEmailError(true);
@@ -43,7 +57,13 @@
 //             return;
 //         }
 
-//         if (!captchaValue) {  // Check if CAPTCHA is completed
+//         if (mode === "Register" && (!phoneNumber || !validatePhoneNumber(phoneNumber))) {
+//             setPhoneNumberError(true);
+//             setPhoneNumberErrorText("Please enter a valid phone number");
+//             return;
+//         }
+
+//         if (!captchaValue) {
 //             setMessage("Please complete the CAPTCHA.");
 //             setShowPopup(true);
 //             return;
@@ -65,10 +85,10 @@
 //                     return;
 //                 }
 
-//                 const sellerFields = { name, email, password, role, shopName };
+//                 const sellerFields = { name, email, password, role, shopName, phoneNumber };
 //                 dispatch(authUser(sellerFields, role, mode));
 //             } else {
-//                 const customerFields = { name, email, password, role };
+//                 const customerFields = { name, email, password, role, phoneNumber };
 //                 dispatch(authUser(customerFields, role, mode));
 //             }
 //         } else if (mode === "Login") {
@@ -83,19 +103,23 @@
 //         if (name === 'email') setEmailError(false);
 //         if (name === 'password') {
 //             setPasswordError(false);
-//             assessPasswordStrength(value); // Check strength on input change
+//             assessPasswordStrength(value);
 //         }
 //         if (name === 'userName') setUserNameError(false);
 //         if (name === 'shopName') setShopNameError(false);
+//         if (name === 'phoneNumber') {
+//             setPhoneNumberError(false);
+//             setPhoneNumberErrorText("");
+//         }
 //     };
 
 //     const assessPasswordStrength = (password) => {
 //         const result = zxcvbn(password);
-//         setPasswordStrength(result.score); // Get the strength score
+//         setPasswordStrength(result.score);
 //     };
 
 //     const onCaptchaChange = (value) => {
-//         setCaptchaValue(value);  // Set the captcha value when completed
+//         setCaptchaValue(value);
 //     };
 
 //     useEffect(() => {
@@ -152,21 +176,41 @@
 
 //                         <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 2 }}>
 //                             {mode === "Register" && (
-//                                 <TextField
-//                                     margin="normal"
-//                                     required
-//                                     fullWidth
-//                                     id="userName"
-//                                     label="Enter your name"
-//                                     name="userName"
-//                                     autoComplete="name"
-//                                     autoFocus
-//                                     variant="standard"
-//                                     error={userNameError}
-//                                     helperText={userNameError && 'Name is required'}
-//                                     onChange={handleInputChange}
-//                                 />
+//                                 <>
+//                                     <TextField
+//                                         margin="normal"
+//                                         required
+//                                         fullWidth
+//                                         id="userName"
+//                                         label="Enter your name"
+//                                         name="userName"
+//                                         autoComplete="name"
+//                                         autoFocus
+//                                         variant="standard"
+//                                         error={userNameError}
+//                                         helperText={userNameError && 'Name is required'}
+//                                         onChange={handleInputChange}
+//                                     />
+//                                     <TextField
+//                                         margin="normal"
+//                                         required
+//                                         fullWidth
+//                                         id="phoneNumber"
+//                                         label="Phone Number"
+//                                         name="phoneNumber"
+//                                         autoComplete="tel"
+//                                         variant="standard"
+//                                         error={phoneNumberError}
+//                                         helperText={phoneNumberError && phoneNumberErrorText}
+//                                         onChange={handleInputChange}
+//                                         inputProps={{
+//                                             pattern: "[0-9]*",
+//                                             inputMode: "numeric"
+//                                         }}
+//                                     />
+//                                 </>
 //                             )}
+                            
 //                             {mode === "Register" && role === "Seller" && (
 //                                 <TextField
 //                                     margin="normal"
@@ -182,6 +226,7 @@
 //                                     onChange={handleInputChange}
 //                                 />
 //                             )}
+
 //                             <TextField
 //                                 margin="normal"
 //                                 required
@@ -195,6 +240,7 @@
 //                                 helperText={emailError && 'Email is required'}
 //                                 onChange={handleInputChange}
 //                             />
+
 //                             <TextField
 //                                 margin="normal"
 //                                 required
@@ -219,7 +265,6 @@
 //                                 }}
 //                             />
                             
-//                             {/* Password Strength Assessment (Only for Register mode) */}
 //                             {mode === "Register" && passwordStrength !== undefined && (
 //                                 <Typography
 //                                     variant="body2"
@@ -227,12 +272,11 @@
 //                                         color: passwordStrength === 4 ? 'green' : passwordStrength > 0 ? 'red' : 'black'
 //                                     }}
 //                                 >
-//                                     {passwordStrength === "~!@#$%^&*()AbcD!@#$%^&*()AbcD".length
+//                                     {passwordStrength === 4
 //                                         ? "Password is strong!"
 //                                         : passwordStrength > 0
 //                                         ? "Password is weak. Try using a mix of letters, numbers, and symbols."
-//                                         : ""
-//                                     }
+//                                         : ""}
 //                                 </Typography>
 //                             )}
 
@@ -243,9 +287,8 @@
 //                                 />
 //                             </Grid>
 
-//                             {/* Add reCAPTCHA component */}
 //                             <ReCAPTCHA
-//                                 sitekey="6LdjS7sqAAAAAGbSewbMxGFpVyEoVK7CMAHwsCjc" // Replace with your reCAPTCHA site key
+//                                 sitekey="6LdjS7sqAAAAAGbSewbMxGFpVyEoVK7CMAHwsCjc"
 //                                 onChange={onCaptchaChange}
 //                             />
 
@@ -257,6 +300,7 @@
 //                             >
 //                                 {loader ? <CircularProgress size={24} color="inherit" /> : mode}
 //                             </LightPurpleButton>
+
 //                             <Grid container>
 //                                 <Grid>
 //                                     {mode === "Register" ? "Already have an account?" : "Don't have an account?"}
@@ -315,17 +359,44 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { Box, Checkbox, CircularProgress, CssBaseline, FormControlLabel, Grid, IconButton, InputAdornment, Paper, TextField, Typography } from '@mui/material';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import ReCAPTCHA from "react-google-recaptcha"; // <-- Import reCAPTCHA
+import ReCAPTCHA from "react-google-recaptcha";
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import zxcvbn from 'zxcvbn'; // Password strength checker library
+import zxcvbn from 'zxcvbn';
 import Popup from '../components/Popup';
 import { authUser } from '../redux/userHandle';
 import { LightPurpleButton } from '../utils/buttonStyles';
+import axios from 'axios';
+
+// SMS notification service
+const sendSMSNotification = async (phoneNumber) => {
+    try {
+        const response = await axios.fetch('https://managepoint.co/profile#4', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                // Add your API authentication headers here
+                'Authorization': '59fd1df5-9c81-415d-98dc-a40a39aeae19'
+            },
+            body: JSON.stringify({
+                phoneNumber,
+                message: 'You have successfully logged in to your account.'
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to send SMS notification');
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('SMS notification error:', error);
+        throw error;
+    }
+};
 
 const AuthenticationPage = ({ mode, role }) => {
-
     const bgpic = "https://images.pexels.com/photos/1121097/pexels-photo-1121097.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1";
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -336,26 +407,33 @@ const AuthenticationPage = ({ mode, role }) => {
     const [loader, setLoader] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
     const [message, setMessage] = useState("");
-    const [captchaValue, setCaptchaValue] = useState(null); // Store captcha value
+    const [captchaValue, setCaptchaValue] = useState(null);
 
     const [emailError, setEmailError] = useState(false);
     const [passwordError, setPasswordError] = useState(false);
     const [passwordStrength, setPasswordStrength] = useState("");
     const [userNameError, setUserNameError] = useState(false);
     const [shopNameError, setShopNameError] = useState(false);
+    const [phoneNumberError, setPhoneNumberError] = useState(false);
+    const [phoneNumberErrorText, setPhoneNumberErrorText] = useState("");
 
-    const handleSubmit = (event) => {
+    const validatePhoneNumber = (phoneNumber) => {
+        const phoneRegex = /^\+?[\d\s-]{10,}$/;
+        return phoneRegex.test(phoneNumber);
+    };
+
+    const handleSubmit = async (event) => {
         event.preventDefault();
 
         const email = event.target.email.value;
         const password = event.target.password.value;
+        const phoneNumber = event.target.phoneNumber?.value;
 
-        // Password strength validation for weak passwords
         const passwordStrengthScore = zxcvbn(password).score;
         if (passwordStrengthScore < 2) {
             setMessage("Password is too weak. Please choose a stronger password.");
             setShowPopup(true);
-            return;  // Prevent form submission
+            return;
         }
 
         if (!email || !password) {
@@ -364,39 +442,64 @@ const AuthenticationPage = ({ mode, role }) => {
             return;
         }
 
-        if (!captchaValue) {  // Check if CAPTCHA is completed
+        if (mode === "Register" && (!phoneNumber || !validatePhoneNumber(phoneNumber))) {
+            setPhoneNumberError(true);
+            setPhoneNumberErrorText("Please enter a valid phone number");
+            return;
+        }
+
+        if (!captchaValue) {
             setMessage("Please complete the CAPTCHA.");
             setShowPopup(true);
             return;
         }
 
-        if (mode === "Register") {
-            const name = event.target.userName.value;
+        setLoader(true);
 
-            if (!name) {
-                setUserNameError(true);
-                return;
-            }
+        try {
+            if (mode === "Register") {
+                const name = event.target.userName.value;
 
-            if (role === "Seller") {
-                const shopName = event.target.shopName.value;
-
-                if (!shopName) {
-                    setShopNameError(true);
+                if (!name) {
+                    setUserNameError(true);
+                    setLoader(false);
                     return;
                 }
 
-                const sellerFields = { name, email, password, role, shopName };
-                dispatch(authUser(sellerFields, role, mode));
-            } else {
-                const customerFields = { name, email, password, role };
-                dispatch(authUser(customerFields, role, mode));
+                if (role === "Seller") {
+                    const shopName = event.target.shopName.value;
+
+                    if (!shopName) {
+                        setShopNameError(true);
+                        setLoader(false);
+                        return;
+                    }
+
+                    const sellerFields = { name, email, password, role, shopName, phoneNumber };
+                    await dispatch(authUser(sellerFields, role, mode));
+                } else {
+                    const customerFields = { name, email, password, role, phoneNumber };
+                    await dispatch(authUser(customerFields, role, mode));
+                }
+            } else if (mode === "Login") {
+                const fields = { email, password };
+                await dispatch(authUser(fields, role, mode));
+                
+                // Send SMS notification on successful login
+                if (phoneNumber) {
+                    try {
+                        await sendSMSNotification(phoneNumber);
+                    } catch (error) {
+                        console.error('Failed to send SMS notification:', error);
+                        // Don't block the login process if SMS fails
+                    }
+                }
             }
-        } else if (mode === "Login") {
-            const fields = { email, password };
-            dispatch(authUser(fields, role, mode));
+        } catch (error) {
+            setLoader(false);
+            setMessage("Authentication failed");
+            setShowPopup(true);
         }
-        setLoader(true);
     };
 
     const handleInputChange = (event) => {
@@ -404,23 +507,33 @@ const AuthenticationPage = ({ mode, role }) => {
         if (name === 'email') setEmailError(false);
         if (name === 'password') {
             setPasswordError(false);
-            assessPasswordStrength(value); // Check strength on input change
+            assessPasswordStrength(value);
         }
         if (name === 'userName') setUserNameError(false);
         if (name === 'shopName') setShopNameError(false);
+        if (name === 'phoneNumber') {
+            setPhoneNumberError(false);
+            setPhoneNumberErrorText("");
+        }
     };
 
     const assessPasswordStrength = (password) => {
         const result = zxcvbn(password);
-        setPasswordStrength(result.score); // Get the strength score
+        setPasswordStrength(result.score);
     };
 
     const onCaptchaChange = (value) => {
-        setCaptchaValue(value);  // Set the captcha value when completed
+        setCaptchaValue(value);
     };
 
     useEffect(() => {
         if (status === 'success' && currentRole !== null) {
+            // If login is successful, attempt to send SMS notification
+            const phoneNumber = document.getElementById('phoneNumber')?.value;
+            if (phoneNumber && mode === "Login") {
+                sendSMSNotification(phoneNumber)
+                    .catch(error => console.error('Failed to send SMS notification:', error));
+            }
             navigate('/');
         } else if (status === 'failed') {
             setMessage(response);
@@ -431,7 +544,7 @@ const AuthenticationPage = ({ mode, role }) => {
             setMessage("Network Error");
             setShowPopup(true);
         }
-    }, [status, currentUser, currentRole, navigate, error, response]);
+    }, [status, currentUser, currentRole, navigate, error, response, mode]);
 
     return (
         <>
@@ -473,21 +586,60 @@ const AuthenticationPage = ({ mode, role }) => {
 
                         <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 2 }}>
                             {mode === "Register" && (
+                                <>
+                                    <TextField
+                                        margin="normal"
+                                        required
+                                        fullWidth
+                                        id="userName"
+                                        label="Enter your name"
+                                        name="userName"
+                                        autoComplete="name"
+                                        autoFocus
+                                        variant="standard"
+                                        error={userNameError}
+                                        helperText={userNameError && 'Name is required'}
+                                        onChange={handleInputChange}
+                                    />
+                                    <TextField
+                                        margin="normal"
+                                        required
+                                        fullWidth
+                                        id="phoneNumber"
+                                        label="Phone Number"
+                                        name="phoneNumber"
+                                        autoComplete="tel"
+                                        variant="standard"
+                                        error={phoneNumberError}
+                                        helperText={phoneNumberError && phoneNumberErrorText}
+                                        onChange={handleInputChange}
+                                        inputProps={{
+                                            pattern: "[0-9]*",
+                                            inputMode: "numeric"
+                                        }}
+                                    />
+                                </>
+                            )}
+
+                            {/* {mode === "Login" && (
                                 <TextField
                                     margin="normal"
-                                    required
                                     fullWidth
-                                    id="userName"
-                                    label="Enter your name"
-                                    name="userName"
-                                    autoComplete="name"
-                                    autoFocus
+                                    id="phoneNumber"
+                                    label="Phone Number (for login notification)"
+                                    name="phoneNumber"
+                                    autoComplete="tel"
                                     variant="standard"
-                                    error={userNameError}
-                                    helperText={userNameError && 'Name is required'}
+                                    error={phoneNumberError}
+                                    helperText={phoneNumberError && phoneNumberErrorText}
                                     onChange={handleInputChange}
+                                    inputProps={{
+                                        pattern: "[0-9]*",
+                                        inputMode: "numeric"
+                                    }}
                                 />
-                            )}
+                            )} */}
+                            
                             {mode === "Register" && role === "Seller" && (
                                 <TextField
                                     margin="normal"
@@ -503,6 +655,7 @@ const AuthenticationPage = ({ mode, role }) => {
                                     onChange={handleInputChange}
                                 />
                             )}
+
                             <TextField
                                 margin="normal"
                                 required
@@ -516,6 +669,7 @@ const AuthenticationPage = ({ mode, role }) => {
                                 helperText={emailError && 'Email is required'}
                                 onChange={handleInputChange}
                             />
+
                             <TextField
                                 margin="normal"
                                 required
@@ -540,7 +694,6 @@ const AuthenticationPage = ({ mode, role }) => {
                                 }}
                             />
                             
-                            {/* Password Strength Assessment (Only for Register mode) */}
                             {mode === "Register" && passwordStrength !== undefined && (
                                 <Typography
                                     variant="body2"
@@ -563,9 +716,8 @@ const AuthenticationPage = ({ mode, role }) => {
                                 />
                             </Grid>
 
-                            {/* Add reCAPTCHA component */}
                             <ReCAPTCHA
-                                sitekey="6LdjS7sqAAAAAGbSewbMxGFpVyEoVK7CMAHwsCjc" // Replace with your reCAPTCHA site key
+                                sitekey="6LdjS7sqAAAAAGbSewbMxGFpVyEoVK7CMAHwsCjc"
                                 onChange={onCaptchaChange}
                             />
 
@@ -577,6 +729,7 @@ const AuthenticationPage = ({ mode, role }) => {
                             >
                                 {loader ? <CircularProgress size={24} color="inherit" /> : mode}
                             </LightPurpleButton>
+
                             <Grid container>
                                 <Grid>
                                     {mode === "Register" ? "Already have an account?" : "Don't have an account?"}

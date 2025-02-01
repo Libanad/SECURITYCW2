@@ -224,3 +224,39 @@ export const getSearchedProducts = (address, key) => async (dispatch) => {
         dispatch(getError(error));
     }
 };
+
+export const resetPassword = (phone, otp, password) => async(dispatch) => {
+    dispatch(authRequest());
+
+    try {
+        const result = await axios.post(`${REACT_APP_BASE_URL}/resetPassword`, { phone, otp, password }, {
+            headers: { 'Content-Type': 'application/json' },
+        });
+        if (result.data.message) {
+            dispatch(authFailed(result.data.message));
+        }
+        else {
+            dispatch(authSuccess(result.data));
+        }
+    } catch (error) {
+        dispatch(authError(error));
+    }
+}
+
+export const forgotPassword = (phone) => async(dispatch) => {
+    dispatch(authRequest());
+
+    try {
+        const result = await axios.post(`${REACT_APP_BASE_URL}/forgotPassword`, { phone }, {
+            headers: { 'Content-Type': 'application/json' },
+        });
+        if (result.data.message) {
+            dispatch(authFailed(result.data.message));
+        }
+        else {
+            dispatch(authSuccess(result.data));
+        }
+    } catch (error) {
+        dispatch(authError(error));
+    }
+}
