@@ -732,11 +732,11 @@ const AuthenticationPage = ({ mode, role }) => {
 
                             <Grid container>
                                 <Grid>
-                                    {mode === "Register" ? "Already have an account?" : "Don't have an account?"}
+                                    {mode === "Register" ? "Already have an account?" : "Don't have an account?"} //register
                                 </Grid>
                                 <Grid item sx={{ ml: 2 }}>
                                     {mode === "Register" ? (
-                                        <StyledLink to={`/${role}login`}>Log in</StyledLink>
+                                        <StyledLink to={`/${role}login`}>Log in</StyledLink> // register login
                                     ) : (
                                         <StyledLink to={`/${role}register`}>Sign up</StyledLink>
                                     )}
