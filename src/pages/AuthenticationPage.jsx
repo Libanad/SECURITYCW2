@@ -765,7 +765,7 @@ const AuthenticationPage = ({ mode, role }) => {
     );
 };
 
-export default AuthenticationPage;
+export default AuthenticationPage;//export
 
 const StyledLink = styled(Link)`
     margin-top: 9px;
