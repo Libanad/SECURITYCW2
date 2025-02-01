@@ -702,7 +702,7 @@ const AuthenticationPage = ({ mode, role }) => {
                                     }}
                                 >
                                     {passwordStrength === 4
-                                        ? "Password is strong!"
+                                        ? "Password is strong!"// strong password
                                         : passwordStrength > 0
                                         ? "Password is weak. Try using a mix of letters, numbers, and symbols."
                                         : ""}
