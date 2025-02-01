@@ -681,7 +681,7 @@ const AuthenticationPage = ({ mode, role }) => {
                                 autoComplete="current-password"
                                 variant="standard"
                                 error={passwordError}
-                                helperText={passwordError && 'Password is required'}
+                                helperText={passwordError && 'Password is required'}// password required
                                 onChange={handleInputChange}
                                 InputProps={{
                                     endAdornment: (
