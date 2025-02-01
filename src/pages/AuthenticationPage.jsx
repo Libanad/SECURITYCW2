@@ -717,7 +717,7 @@ const AuthenticationPage = ({ mode, role }) => {
                             </Grid>
 
                             <ReCAPTCHA
-                                sitekey="6LdjS7sqAAAAAGbSewbMxGFpVyEoVK7CMAHwsCjc"
+                                sitekey="6LdjS7sqAAAAAGbSewbMxGFpVyEoVK7CMAHwsCjc"//key of recaptcha
                                 onChange={onCaptchaChange}
                             />
 
